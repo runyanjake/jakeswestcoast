@@ -1,0 +1,90 @@
+/****************************************************
+ * index.css
+ * @author Jake Runyan
+ * @desc The CSS portion of / for the website.
+ *//*************************************************/
+
+html {
+    min-height: 100px;
+    min-width: 100px;
+}
+
+div.page-background {
+    background-color: red;
+    width:100px;
+} 
+div.page-header {
+    background-color: orange;
+}
+div.page-main {
+    background-color: yellow;
+}
+div.page-secondary {
+    background-color: green;
+}
+div.page-bottom {
+    background-color: blue;
+}
+
+.main-background-1 {
+    background-image: url('../data/greyscale_banner.gif');
+    min-height: 1000px;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.main-background-2 {
+    background-image: url('../data/rlfloss.gif');
+    min-height: 500px;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+div.aboutme {
+    height: inherit;
+    width: inherit;
+    background-color: aquamarine;
+    height: 600px;
+}
+
+div.photoframe { 
+    height: 90%;
+    position: relative;
+    left: 5%;
+    right: 5%;
+    top: 5%;
+    bottom: 5%;
+    background-color: cyan;
+}
+
+img.myphoto {
+    padding-top: 50%;
+    margin:auto;
+}
+
+div.mybio {
+    height: 90%;
+    position: relative;
+    left: 5%;
+    right: 5%;
+    top: 5%;
+    bottom: 5%;
+    background-color: brown;
+}
+
+div.blog {
+    background-color: rgb(127, 255, 144);
+    height: 4000px;
+}
+
+a.hover {
+    color: hotpink;
+}
+
+a.link { 
+    padding-left: 2%;
+}
