@@ -1,0 +1,17 @@
+networks:
+  traefik:
+    external: true
+
+services:
+  jakeswestcoast:
+    container_name: jakeswestcoast
+    networks:
+      - traefik
+    build: .
+    ports:
+      - "5000:5000"
+    labels:
+      - traefik.http.routers.league.rule=Host(`jakeswestcoast.com`) || Host(`www.jakeswestcoast.com`)
+      - traefik.http.routers.league.tls=true
+      - traefik.http.routers.league.tls.certresolver=lets-encrypt
+      - traefik.http.services.downloads.loadbalancer.server.port=5000
