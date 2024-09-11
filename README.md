@@ -1,4 +1,8 @@
 # jakeswestcoast
 Website HTML for www.jakeswestcoast.com.
-</br>
-Note: `data/greyscale_banner.gif` is too large for Github. Gonna have to store it on egn.
+
+## Running
+```
+docker compose down && docker system prune -af && docker compose build && docker compose up -d && docker logs -f jakeswestcoast
+```
+
