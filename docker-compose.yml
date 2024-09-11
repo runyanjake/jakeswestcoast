@@ -8,8 +8,6 @@ services:
     networks:
       - traefik
     build: .
-    ports:
-      - "5000:5000"
     labels:
       - traefik.http.routers.league.rule=Host(`jakeswestcoast.com`) || Host(`www.jakeswestcoast.com`)
       - traefik.http.routers.league.tls=true
