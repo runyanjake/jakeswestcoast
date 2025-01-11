@@ -33,3 +33,32 @@ nav ul li a:hover {
 .page {
   padding: 20px;
 }
+
+.navbar {
+    display: flex;
+    justify-content: space-between; /* Space between links and icons */
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #333; /* Background color */
+    color: white; /* Text color */
+}
+
+.nav-links a {
+    color: white; /* Link color */
+    margin: 0 15px; /* Spacing between links */
+    text-decoration: none; /* Remove underline */
+}
+
+.social-icons a {
+    margin-left: 15px; /* Spacing between icons */
+}
+
+.social-icons img {
+    width: 24px; /* Icon size */
+    height: 24px; /* Icon size */
+    transition: transform 0.2s; /* Animation on hover */
+}
+
+.social-icons img:hover {
+    transform: scale(1.1); /* Scale up on hover */
+}

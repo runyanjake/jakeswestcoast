@@ -1,3 +1,40 @@
 .page {
     padding: 20px;
-  }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.video-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.video-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    width: 100%; /* Full width for the card */
+    max-width: 560px; /* Max width to match the video */
+    text-align: center;
+    position: relative; /* Positioning for the iframe */
+    overflow: hidden; /* Hide overflow */
+}
+
+/* Responsive iframe */
+.video-card iframe {
+    width: 100%; /* Full width for the iframe */
+    height: auto; /* Maintain aspect ratio */
+    aspect-ratio: 16 / 9; /* Maintain 16:9 aspect ratio */
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+    .video-card {
+        width: 100%; /* Full width on small screens */
+    }
+}
