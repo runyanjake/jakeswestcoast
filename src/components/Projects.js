@@ -18,7 +18,6 @@ function Projects() {
             url: 'https://www.youtube.com/watch?v=_z7g9PyfrK8',
             description: 'A relaxed group ride into Marin county to Alpine Dam. Lots of climbing from city to dam to the ridgeline.',
         },
-        // Add more video objects as needed
     ];
 
     return (
