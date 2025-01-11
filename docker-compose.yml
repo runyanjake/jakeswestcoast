@@ -3,9 +3,9 @@ networks:
     external: true
 
 services:
-  react-app:
+  app:
     container_name: jakeswestcoast
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
     networks:
@@ -15,3 +15,4 @@ services:
       - traefik.http.routers.jwc.tls=true
       - traefik.http.routers.jwc.tls.certresolver=lets-encrypt
       - traefik.http.services.jwc.loadbalancer.server.port=80
+      - traefik.port=80
