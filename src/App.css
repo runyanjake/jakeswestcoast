@@ -44,6 +44,18 @@ nav ul li a:hover {
   z-index: 2;
 }
 
+.home-content h1 {
+  font-size: 4vw;
+  font-weight: bold;
+  margin: 0;
+}
+
+.home-content p {
+  font-size: 1vw;
+  font-weight: bold;
+  margin: 0;
+}
+
 .background-video {
   position: absolute;
   top: 50%;
