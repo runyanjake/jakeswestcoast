@@ -6,6 +6,8 @@ services:
   react-app:
     container_name: jakeswestcoast
     build: .
+    networks:
+      - traefik
     volumes:
       - .:/app
       - /app/node_modules
