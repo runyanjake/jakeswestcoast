@@ -5,14 +5,11 @@ networks:
 services:
   react-app:
     container_name: jakeswestcoast
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile
     networks:
       - traefik
-    volumes:
-      - .:/app
-      - /app/node_modules
-    environment:
-      - NODE_ENV=production
     labels:
       - traefik.http.routers.jwc.rule=Host(`jakeswestcoast.com`) || Host(`www.jakeswestcoast.com`)
       - traefik.http.routers.jwc.tls=true
