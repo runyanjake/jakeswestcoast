@@ -2,11 +2,11 @@ FROM node:14 AS build
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package*.json /app
 
 RUN npm install
 
-COPY . .
+COPY . /app
 
 RUN npm run build
 
