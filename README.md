@@ -11,6 +11,7 @@ npm start
 2. Install missing packages
 ```
 npm install web-vitals
+npm install react-router-dom
 ```
 3. Test changes/fixes with
 ```

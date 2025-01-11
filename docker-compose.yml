@@ -3,13 +3,16 @@ networks:
     external: true
 
 services:
-  jakeswestcoast:
+  react-app:
     container_name: jakeswestcoast
-    networks:
-      - traefik
     build: .
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=production
     labels:
-      - traefik.http.routers.league.rule=Host(`jakeswestcoast.com`) || Host(`www.jakeswestcoast.com`)
-      - traefik.http.routers.league.tls=true
-      - traefik.http.routers.league.tls.certresolver=lets-encrypt
-      - traefik.http.services.downloads.loadbalancer.server.port=5000
+      - traefik.http.routers.jwc.rule=Host(`jakeswestcoast.com`) || Host(`www.jakeswestcoast.com`)
+      - traefik.http.routers.jwc.tls=true
+      - traefik.http.routers.jwc.tls.certresolver=lets-encrypt
+      - traefik.http.services.jwc.loadbalancer.server.port=3000

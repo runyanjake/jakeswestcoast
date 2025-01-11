@@ -1,14 +1,17 @@
-FROM python:3.10-slim
+FROM node:16-alpine
 
 WORKDIR /app
 
-COPY . /app
+COPY package*.json ./
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN npm install
 
-EXPOSE 5000
+COPY . .
 
-ENV FLASK_APP=app.py
-ENV FLASK_ENV=development
+RUN npm run build
 
-CMD ["flask", "run", "--host=0.0.0.0"]
+RUN npm install -g serve
+
+EXPOSE 3000
+
+CMD ["serve", "-s", "build", "-l", "3000"]
