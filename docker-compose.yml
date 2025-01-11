@@ -14,4 +14,4 @@ services:
       - traefik.http.routers.jwc.rule=Host(`jakeswestcoast.com`) || Host(`www.jakeswestcoast.com`)
       - traefik.http.routers.jwc.tls=true
       - traefik.http.routers.jwc.tls.certresolver=lets-encrypt
-      - traefik.http.services.jwc.loadbalancer.server.port=3000
+      - traefik.http.services.jwc.loadbalancer.server.port=80
