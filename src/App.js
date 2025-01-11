@@ -19,13 +19,13 @@ function App() {
                         <Link to="/about">About</Link>
                     </div>
                     <div className="social-icons">
-                        <a href="https://www.instagram.com/yourprofile" target="_blank" rel="noopener noreferrer" title="Instagram">
+                        <a href="https://www.instagram.com/jakeswestcoast" target="_blank" rel="noopener noreferrer" title="Instagram">
                             <img src={instagramIcon} alt="Instagram" />
                         </a>
-                        <a href="https://github.com/yourprofile" target="_blank" rel="noopener noreferrer" title="GitHub">
+                        <a href="https://github.com/runyanjake/jakeswestcoast" target="_blank" rel="noopener noreferrer" title="GitHub">
                             <img src={githubIcon} alt="GitHub" />
                         </a>
-                        <a href="https://www.youtube.com/channel/yourchannel" target="_blank" rel="noopener noreferrer" title="YouTube">
+                        <a href="https://www.youtube.com/@jakeswestcoast" target="_blank" rel="noopener noreferrer" title="YouTube">
                             <img src={youtubeIcon} alt="YouTube" />
                         </a>
                     </div>
