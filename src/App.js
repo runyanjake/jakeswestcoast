@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 import Home from './components/Home';
@@ -9,6 +9,10 @@ import githubIcon from './static/github-icon.png';
 import youtubeIcon from './static/youtube-icon.png';
 
 function App() {
+    useEffect(() => {
+        document.title = "Jake's West Coast";
+    }, []);
+
     return (
         <Router>
             <div className="App">
