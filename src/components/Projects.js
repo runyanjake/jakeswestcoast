@@ -18,6 +18,11 @@ function Projects() {
             url: 'https://www.youtube.com/watch?v=_z7g9PyfrK8',
             description: 'A relaxed group ride into Marin county to Alpine Dam. Lots of climbing from city to dam to the ridgeline.',
         },
+        {
+            title: 'China Camp',
+            url: 'https://www.youtube.com/watch?v=6CkZZhwRLcQ',
+            description: 'A return to gravel, in the form of a road ride from Berkeley to China Camp State Park, on the south side of the San Pablo Bay. Excellent miles, and great gravel trails, with pleasant weather to top it all off.',
+        },
     ];
 
     return (
