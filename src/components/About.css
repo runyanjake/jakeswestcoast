@@ -1,3 +1,31 @@
-.page {
-    padding: 20px;
-  }
+.about-page {
+    min-height: 100vh;
+    padding: 74px 24px 80px;
+}
+
+.about-header {
+    text-align: center;
+    padding: 60px 0 40px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 48px;
+}
+
+.about-header h1 {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: bold;
+    margin: 0;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.about-body {
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+.about-body p {
+    font-size: 1.1rem;
+    line-height: 1.9;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+}

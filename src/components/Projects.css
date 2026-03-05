@@ -1,40 +1,35 @@
-.page {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+.projects-page {
     min-height: 100vh;
+    padding: 74px 24px 80px;
+}
+
+.projects-header {
+    text-align: center;
+    padding: 60px 0 40px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 48px;
+}
+
+.projects-header h1 {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: bold;
+    margin: 0 0 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.projects-header p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.04em;
 }
 
 .video-cards {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 28px;
     justify-content: center;
-}
-
-.video-card {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 10px;
-    width: 100%; /* Full width for the card */
-    max-width: 560px; /* Max width to match the video */
-    text-align: center;
-    position: relative; /* Positioning for the iframe */
-    overflow: hidden; /* Hide overflow */
-}
-
-/* Responsive iframe */
-.video-card iframe {
-    width: 100%; /* Full width for the iframe */
-    height: auto; /* Maintain aspect ratio */
-    aspect-ratio: 16 / 9; /* Maintain 16:9 aspect ratio */
-}
-
-/* Responsive styles */
-@media (max-width: 600px) {
-    .video-card {
-        width: 100%; /* Full width on small screens */
-    }
+    max-width: 1200px;
+    margin: 0 auto;
 }
