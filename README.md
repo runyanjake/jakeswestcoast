@@ -1,28 +1,33 @@
-# jakeswestcoast
-Jake's West Coast Website
+# Jake's West Coast
 
-## First Time Setup
-1. Create basic react app.
+A website for the Jake's West Coast channel. Built as a React app.
+
+## Stack
+
+- **React 19**
+- **Plain CSS** per component — dark theme, frosted glass navbar, responsive video grid
+- **Docker** for containerized deployment
+
+## Structure
+
 ```
-npx create-react-app jakeswestcoast
-cd jakeswestcoast
-npm start
-```
-2. Install missing packages
-```
-npm install web-vitals
-npm install react-router-dom
-```
-3. Test changes/fixes with
-```
-npm install
-npm start
+src/
+├── App.js                  # Root layout, routing
+├── components/
+│   ├── Navbar.js/css       # Fixed frosted glass nav
+│   ├── Home.js/css         # Full-viewport hero
+│   ├── About.js/css        # Bio page
+│   ├── Projects.js/css     # Video gallery
+│   └── VideoCard.js/css    # Individual YouTube embed card
+└── data/
+    └── videos.js           # Video metadata
 ```
 
 ## Running
 
 ### Local development
 ```
+npm install
 npm start
 ```
 
