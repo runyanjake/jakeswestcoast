@@ -2,20 +2,16 @@ pipeline {
     agent any
 
     environment {
-        // Secret: Discord webhook used by the post-build notifier.
         DISCORD_WEBHOOK = credentials('discord-pws-builds-channel-webhook')
 
-        // Deployment identity / topology (non-secret, declared here for auditability).
-        COMPOSE_PROJECT_NAME = 'jakeswestcoast'
-        APP_CONTAINER        = 'jakeswestcoast'
-        DEPLOY_NETWORK       = 'traefik'
+        COMPOSE_SERVICE = 'app'
+        CONTAINER_NAME  = 'jakeswestcoast'
+    }
 
-        // Clean, pinned image used to run static checks in isolation.
-        LINT_IMAGE = 'node:18-alpine'
-
-        // Health/smoke probing (served internally on port 80, reached via the container).
-        HEALTH_URL   = 'http://localhost:80/'
-        SMOKE_MARKER = 'id="root"'
+    options {
+        timestamps()
+        disableConcurrentBuilds()
+        timeout(time: 30, unit: 'MINUTES')
     }
 
     stages {
@@ -28,65 +24,63 @@ pipeline {
         stage('Preflight') {
             steps {
                 sh '''
-                    set -e
-                    [ -n "$DISCORD_WEBHOOK" ] || { echo "ERROR: DISCORD_WEBHOOK credential is missing."; exit 1; }
-                    docker network inspect "$DEPLOY_NETWORK" >/dev/null 2>&1 \
-                        || { echo "ERROR: external network '$DEPLOY_NETWORK' does not exist."; exit 1; }
-                    docker compose config -q \
-                        || { echo "ERROR: docker-compose configuration is invalid."; exit 1; }
+                    set -eu
+                    : "${DISCORD_WEBHOOK:?required credential discord-pws-builds-channel-webhook is missing}"
+                    for f in Dockerfile package.json docker-compose.yml; do
+                        [ -f "$f" ] || { echo "ERROR: required file '$f' not found at repo root" >&2; exit 1; }
+                    done
+                    docker compose config -q
                 '''
             }
         }
 
         stage('Lint & Type-check') {
             steps {
-                // Run checks in a throwaway container so host state can't mask errors.
-                sh '''
-                    set -e
-                    docker run --rm -v "$WORKSPACE:/app" -w /app "$LINT_IMAGE" \
-                        sh -c "npm install --no-audit --no-fund && npx eslint src/" \
-                        || { echo "ERROR: static checks failed."; exit 1; }
-                '''
+                // Static checks run inside the image's ci target; nothing touches the agent.
+                sh 'docker build --target ci -t ${CONTAINER_NAME}-ci:${BUILD_NUMBER} .'
             }
         }
 
         stage('Teardown') {
             steps {
                 sh '''
-                    set -e
-                    docker compose down --remove-orphans \
-                        || { echo "ERROR: failed to tear down the previous deployment."; exit 1; }
+                    set -eu
+                    docker compose down --remove-orphans || true
+                    # container_name is fixed, so a stale container can survive "down"
+                    # and then block "up" with a name conflict; reap it explicitly.
+                    docker rm -f "$CONTAINER_NAME" >/dev/null 2>&1 || true
                 '''
             }
         }
 
         stage('Build & Deploy') {
             steps {
-                sh '''
-                    set -e
-                    docker compose up -d --build \
-                        || { echo "ERROR: build and deploy failed."; exit 1; }
-                '''
+                // No build-time secrets: the React build consumes only static assets.
+                sh 'docker compose up -d --build'
             }
         }
 
         stage('Health Check') {
             steps {
-                // Poll until the container serves, failing fast if it exits or never becomes ready.
                 sh '''
-                    set -e
-                    for i in $(seq 1 20); do
-                        running=$(docker inspect -f '{{.State.Running}}' "$APP_CONTAINER" 2>/dev/null || echo "false")
-                        [ "$running" = "true" ] || { echo "ERROR: container '$APP_CONTAINER' is not running."; exit 1; }
-                        if docker exec "$APP_CONTAINER" wget -q -O /dev/null "$HEALTH_URL"; then
-                            echo "App is live."
-                            exit 0
-                        fi
-                        echo "Waiting for app to become ready ($i)..."
-                        sleep 3
+                    set -eu
+                    cid="$(docker compose ps -q "$COMPOSE_SERVICE")"
+                    [ -n "$cid" ] || { echo "ERROR: $COMPOSE_SERVICE container not found" >&2; exit 1; }
+
+                    # Wait for the image's HEALTHCHECK to report healthy, failing fast on terminal states.
+                    deadline=$(( $(date +%s) + 90 ))
+                    while :; do
+                        status="$(docker inspect -f '{{.State.Status}}' "$cid")"
+                        health="$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$cid")"
+                        [ "$status" = "running" ] && [ "$health" = "healthy" ] && break
+                        [ "$health" = "unhealthy" ] && { echo "ERROR: $COMPOSE_SERVICE reported unhealthy" >&2; exit 1; }
+                        case "$status" in
+                            exited|dead) echo "ERROR: $COMPOSE_SERVICE container $status before becoming healthy" >&2; exit 1 ;;
+                        esac
+                        [ "$(date +%s)" -ge "$deadline" ] && { echo "ERROR: timed out waiting for healthy (status=$status, health=$health)" >&2; exit 1; }
+                        sleep 2
                     done
-                    echo "ERROR: app did not become healthy in time."
-                    exit 1
+                    echo "$COMPOSE_SERVICE healthy"
                 '''
             }
         }
@@ -94,12 +88,14 @@ pipeline {
         stage('Smoke Test') {
             steps {
                 sh '''
-                    set -e
-                    body=$(docker exec "$APP_CONTAINER" wget -q -O- "$HEALTH_URL") \
-                        || { echo "ERROR: smoke request failed."; exit 1; }
-                    echo "$body" | grep -q "$SMOKE_MARKER" \
-                        || { echo "ERROR: smoke test did not find expected content ('$SMOKE_MARKER')."; exit 1; }
-                    echo "Smoke test passed."
+                    set -eu
+                    cid="$(docker compose ps -q "$COMPOSE_SERVICE")"
+                    [ -n "$cid" ] || { echo "ERROR: $COMPOSE_SERVICE container not found" >&2; exit 1; }
+
+                    # Real request from inside the container: GET / must serve the SPA shell.
+                    body="$(docker exec "$cid" wget -q -O - http://127.0.0.1:80/)" || { echo "ERROR: GET / did not return a successful response" >&2; exit 1; }
+                    echo "$body" | grep -q 'id="root"' || { echo "ERROR: GET / response missing expected app markup" >&2; exit 1; }
+                    echo "smoke test passed"
                 '''
             }
         }
@@ -109,24 +105,26 @@ pipeline {
         always {
             script {
                 def result = currentBuild.currentResult
-                def emoji = result == 'SUCCESS' ? ':green_circle:' : (result == 'FAILURE' ? ':red_circle:' : ':yellow_circle:')
-                def branch = env.GIT_BRANCH ?: env.BRANCH_NAME ?: 'Main/Manual'
-                def duration = currentBuild.durationString.replace(' and no weeks', '').replace(' and counting', '')
+                def emoji = result == 'SUCCESS' ? ':green_circle:' :
+                            result == 'FAILURE' ? ':red_circle:' : ':yellow_circle:'
 
-                def commitLines = []
-                for (changeSet in currentBuild.changeSets) {
-                    for (commit in changeSet.items) {
-                        commitLines.add("> ${commit.msg} (by *${commit.author.fullName}*)")
-                    }
+                def branch = env.BRANCH_NAME ?: env.GIT_BRANCH ?: 'Main/Manual'
+
+                def duration = currentBuild.durationString
+                    .replace(' and no weeks', '')
+                    .replace(' and counting', '')
+
+                def commits = currentBuild.changeSets.collectMany { set ->
+                    set.items.collect { "> ${it.msg} (by *${it.author.fullName}*)" }
                 }
-                def commits = commitLines ? commitLines.join('\n') : 'No recent changes detected.'
+                def commitText = commits ? commits.join('\n') : 'No recent changes detected.'
 
                 def discordDescription = """**Status:** ${emoji} ${result}
 **Branch:** `${branch}`
 **Duration:** :stopwatch: ${duration}
 
 **Commits:**
-${commits}"""
+${commitText}"""
 
                 discordSend(
                     webhookURL: env.DISCORD_WEBHOOK,
@@ -137,12 +135,13 @@ ${commits}"""
                 )
             }
         }
+
         failure {
             sh '''
-                echo "===== docker compose ps ====="
+                echo "=== docker compose ps ==="
                 docker compose ps || true
-                echo "===== recent logs ====="
-                docker compose logs --no-color --tail=200 || true
+                echo "=== recent logs ==="
+                docker compose logs --tail=200 || true
             '''
         }
     }
