@@ -2,7 +2,8 @@
 /node_modules
 /.pnp
 .pnp.js
-package-lock.json
+# package-lock.json is committed on purpose: CI installs with `npm ci`, so the
+# lock file is what keeps image builds reproducible across new upstream releases.
 
 # testing
 /coverage

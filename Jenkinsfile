@@ -26,7 +26,8 @@ pipeline {
                 sh '''
                     set -eu
                     : "${DISCORD_WEBHOOK:?required credential discord-pws-builds-channel-webhook is missing}"
-                    for f in Dockerfile package.json docker-compose.yml; do
+                    # package-lock.json is required: the image installs with `npm ci`.
+                    for f in Dockerfile package.json package-lock.json docker-compose.yml; do
                         [ -f "$f" ] || { echo "ERROR: required file '$f' not found at repo root" >&2; exit 1; }
                     done
                     docker compose config -q
